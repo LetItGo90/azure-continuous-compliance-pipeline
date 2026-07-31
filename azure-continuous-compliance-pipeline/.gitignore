@@ -1,0 +1,12 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
+crash.*.log
+# Terraform state and local dirs (CRITICAL)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl

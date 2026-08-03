@@ -1,0 +1,24 @@
+controls:
+  - control_id: "AC-6"
+    framework: "NIST 800-53"
+    description: "Least privilege - restrict deployment regions"
+    enforced_by: "terraform/environments/dev/policy.tf (allowed_locations)"
+    status: "enforced"
+
+  - control_id: "CM-8"
+    framework: "NIST 800-53"
+    description: "System component inventory - require ownership/environment tagging"
+    enforced_by: "terraform/environments/dev/policy.tf (require_tag)"
+    status: "enforced"
+
+  - control_id: "SC-8"
+    framework: "NIST 800-53"
+    description: "Transmission confidentiality - deny unencrypted storage transport"
+    enforced_by: "terraform/environments/dev/policy.tf (require_https_storage)"
+    status: "enforced"
+
+  - control_id: "SC-7"
+    framework: "NIST 800-53"
+    description: "Boundary protection - deny direct public IP exposure"
+    enforced_by: "terraform/environments/dev/policy.tf (deny_public_ip)"
+    status: "enforced"

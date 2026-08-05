@@ -1,0 +1,40 @@
+name: Terraform Apply
+
+on:
+  workflow_run:
+    workflows: ["Terraform Plan"]
+    types: [completed]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+    environment: lab
+    defaults:
+      run:
+        working-directory: terraform/environments/dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.0
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Run Terraform Apply
+        run: terraform apply -auto-approve

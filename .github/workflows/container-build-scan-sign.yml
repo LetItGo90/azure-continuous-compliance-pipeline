@@ -36,3 +36,44 @@ jobs:
           az acr build --registry ${{ env.ACR_NAME }} \
             --image ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
             ./app
+      - name: Get image digest
+        id: digest
+        run: |
+            DIGEST=$(az acr repository show --name ${{ env.ACR_NAME }} --image ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} --query digest -o tsv)
+            echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+
+      - name: Docker login to ACR
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@v0
+
+      - name: SBOM with Syft spdx
+        run: |
+          syft ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -o spdx-json > sbom-spdx.json
+      - name: SBOM with Syft (CycloneDX)
+        run: |
+          syft ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -o cyclonedx-json > sbom-cyclonedx.json
+
+      - name: Install Grype
+        uses: anchore/scan-action/download-grype@v3
+
+      - name: Scan SBOM with Grype (fail on critical)
+        run: |
+          grype sbom:sbom-cyclonedx.json --fail-on critical
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign the image with Cosign keyless
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          cosign sign --yes ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}@${{ steps.digest.outputs.digest }}
+
+      - name: cosign attest cyclonedx SBOM keyless
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          cosign attest --yes --type cyclonedx --predicate sbom-cyclonedx.json ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}@${{ steps.digest.outputs.digest }}

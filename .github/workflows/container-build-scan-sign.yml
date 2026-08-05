@@ -60,7 +60,7 @@ jobs:
       - name: Install Grype
         uses: anchore/scan-action/download-grype@v3
 
-      - namee: Update Grype DB
+      - name: Update Grype DB
         run: grype db update
       - name: Scan SBOM with Grype (fail on critical)
         run: |

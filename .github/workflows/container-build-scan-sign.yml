@@ -57,11 +57,12 @@ jobs:
         run: |
           syft ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} -o cyclonedx-json > sbom-cyclonedx.json
 
-      - name: Install Grype
-        uses: anchore/scan-action/download-grype@v3
+      - name: Install latest Grype
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
 
       - name: Update Grype DB
         run: grype db update
+
       - name: Scan SBOM with Grype (fail on critical)
         run: |
           grype sbom:sbom-cyclonedx.json --fail-on critical

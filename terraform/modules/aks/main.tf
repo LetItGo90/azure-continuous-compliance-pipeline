@@ -57,11 +57,14 @@ resource "azurerm_role_assignment" "aks_role" {
   skip_service_principal_aad_check = true
 }
 
-# User-assigned managed identity for workload identity
 resource "azurerm_user_assigned_identity" "kv_secrets" {
   name                = "aks-kv-secrets-identity"
   location            = var.location
   resource_group_name = var.resource_group_name
+
+  tags = {
+    Environment = "lab"
+  }
 }
 
 # Grant it Key Vault Secrets User role

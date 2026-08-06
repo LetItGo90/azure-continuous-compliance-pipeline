@@ -13,7 +13,9 @@ spec:
     metadata:
       labels:
         app: sampleapp
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: sampleapp-sa
       containers:
         - name: sampleapp
           image: acrdevsecopslabregistryproject2192.azurecr.io/sampleapp:v1
@@ -23,8 +25,12 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: app-secret
+                  name: app-secret-from-kv
                   key: DATABASE_URL
+          volumeMounts:
+            - name: secrets-store
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
           resources:
             requests:
               cpu: "100m"
@@ -32,3 +38,10 @@ spec:
             limits:
               cpu: "250m"
               memory: "256Mi"
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-kv-secrets"

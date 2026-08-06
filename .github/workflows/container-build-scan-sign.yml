@@ -64,15 +64,18 @@ jobs:
         run: grype db update
 
       - name: Scan SBOM with Grype (fail on critical)
-        run: |
-          grype sbom:sbom-cyclonedx.json --fail-on critical
         continue-on-error: true
+        run: |
+          grype sbom:sbom-cyclonedx.json --fail-on critical -o json > grype-results.json
 
       - name: Upload Grype report
+        if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: grype-report
-          path: grype-report.txt
+          path: grype-results.json
+
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
 

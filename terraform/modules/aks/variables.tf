@@ -21,3 +21,8 @@ variable "subnet_id" {
   description = "The ID of the subnet to deploy the AKS cluster into"
   type        = string
 }
+
+variable "keyvault_id" {
+  description = "The ID of the Key Vault for secrets access"
+  type        = string
+}

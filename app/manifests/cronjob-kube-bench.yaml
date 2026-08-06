@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kube-bench-scan
+  namespace: kube-bench
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          hostPID: true
+          restartPolicy: Never
+          containers:
+            - name: kube-bench
+              image: aquasec/kube-bench:latest
+              command: ["kube-bench", "run"]
+          volumes:
+            - name: etc-kubernetes
+              hostPath:
+                path: "/etc/kubernetes"

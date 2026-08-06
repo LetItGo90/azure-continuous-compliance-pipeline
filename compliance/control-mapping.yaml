@@ -1,24 +1,90 @@
 controls:
-  - control_id: "AC-6"
-    framework: "NIST 800-53"
-    description: "Least privilege - restrict deployment regions"
-    enforced_by: "terraform/environments/dev/policy.tf (allowed_locations)"
-    status: "enforced"
+  - control_id: AC-6
+    framework: NIST 800-53
+    description: Least privilege - restrict deployment regions
+    enforced_by: terraform/environments/dev/policy.tf (allowed_locations)
+    status: enforced
 
-  - control_id: "CM-8"
-    framework: "NIST 800-53"
-    description: "System component inventory - require ownership/environment tagging"
-    enforced_by: "terraform/environments/dev/policy.tf (require_tag)"
-    status: "enforced"
+  - control_id: CM-8
+    framework: NIST 800-53
+    description: System component inventory - require ownership/environment tagging
+    enforced_by: terraform/environments/dev/policy.tf (require_tag)
+    status: enforced
 
-  - control_id: "SC-8"
-    framework: "NIST 800-53"
-    description: "Transmission confidentiality - deny unencrypted storage transport"
-    enforced_by: "terraform/environments/dev/policy.tf (require_https_storage)"
-    status: "enforced"
+  - control_id: SC-8
+    framework: NIST 800-53
+    description: Transmission confidentiality - deny unencrypted storage transport
+    enforced_by: terraform/environments/dev/policy.tf (require_https_storage)
+    status: enforced
 
-  - control_id: "SC-7"
-    framework: "NIST 800-53"
-    description: "Boundary protection - deny direct public IP exposure"
-    enforced_by: "terraform/environments/dev/policy.tf (deny_public_ip)"
-    status: "enforced"
+  - control_id: SC-7
+    framework: NIST 800-53
+    description: Boundary protection - deny direct public IP exposure
+    enforced_by: terraform/environments/dev/policy.tf (deny_public_ip)
+    status: enforced
+
+  - control_id: RA-5
+    framework: NIST 800-53
+    description: Vulnerability monitoring and scanning - container images scanned on
+      every build
+    enforced_by: .github/workflows/container-build-scan-sign.yml (grype scan step)
+    status: enforced
+
+  - control_id: RA-5(fixable-finding)
+    framework: NIST 800-53
+    description: Vulnerability remediation - CVE-2026-11940 (Python tarfile symlink
+      escape, High) has an available fix (3.15.0b4); base image bump tracked
+    enforced_by: grype scan output, sampleapp:v1 base image (python:3.13-slim)
+    status: remediation-pending
+
+  - control_id: RA-5(accepted-risk)
+    framework: NIST 800-53
+    description: Vulnerability tracking with no vendor fix - CVE-2026-5450 (glibc
+      scanf heap overflow, Critical) is Debian wont-fix; risk accepted,
+      documented per POA&M practice
+    enforced_by: grype scan output, sampleapp:v1 base image (python:3.13-slim,
+      libc6/libc-bin package)
+    status: accepted-risk
+
+  - control_id: RA-5(accepted-risk)
+    framework: NIST 800-53
+    description: Vulnerability tracking with no vendor fix - CVE-2026-8376 (Perl
+      regex heap overflow, Critical) is Debian wont-fix; risk accepted,
+      documented per POA&M practice
+    enforced_by: grype scan output, sampleapp:v1 base image (python:3.13-slim,
+      perl-base package)
+    status: accepted-risk
+
+  - control_id: SI-2
+    framework: NIST 800-53
+    description: Flaw remediation - SBOM generated on every build (CycloneDX + SPDX)
+      to enable rapid impact assessment when new CVEs are disclosed
+    enforced_by: .github/workflows/container-build-scan-sign.yml (syft SBOM generation)
+    status: enforced
+
+  - control_id: SI-7
+    framework: NIST 800-53
+    description: Software, firmware, and information integrity - container images
+      signed and SBOM attested via Cosign keyless signing before deployment
+    enforced_by: .github/workflows/container-build-scan-sign.yml (cosign sign/attest steps)
+    status: enforced
+
+  - control_id: CM-6
+    framework: NIST 800-53
+    description: Configuration settings - enforce Kubernetes Pod Security Standards
+      (baseline profile) cluster-wide via admission control
+    enforced_by: policy/kyverno/baseline-pod-pss.yaml
+    status: monitoring
+Resources:
+  DomainNameAccessAssociation:
+    Type: AWS::ApiGateway::DomainNameAccessAssociation
+    Properties:
+      DomainNameArn: <String>
+      AccessAssociationSource: <String>
+      AccessAssociationSourceType: <String>
+Metadata:
+  AWS::Composer::Groups:
+    Group:
+      Label: Group
+      Members:
+        - DomainNameAccessAssociation

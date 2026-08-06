@@ -22,6 +22,7 @@ module "aks" {
   resource_group_name = azurerm_resource_group.workload_rg.name
   subnet_id           = module.networking.subnet_id
   acr_id              = module.acr.acr_id
+  keyvault_id         = module.keyvault.key_vault_id
 }
 
 module "keyvault" {

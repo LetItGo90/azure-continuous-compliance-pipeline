@@ -1,5 +1,3 @@
-markdown
-
 # Azure DevSecOps Platform
 
 A Kubernetes-based application platform on Azure demonstrating continuous security validation, policy-as-code enforcement, and compliance evidence generation.

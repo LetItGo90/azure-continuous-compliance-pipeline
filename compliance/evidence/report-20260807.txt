@@ -1,0 +1,12 @@
+Control                                    Score    Max
+-----------------------------------------  -------  -----
+Implement security best practices          0.0      0
+Manage access and permissions              2.0      4
+Encrypt data in transit                    4.0      4
+Restrict unauthorized network access       0.0      4
+Enable enhanced security features          0.0      0
+Enable encryption at rest                  0.0      0
+Remediate security configurations          4.0      4
+Remediate vulnerabilities                  0.0      6
+Protect applications against DDoS attacks  0.0      2
+Enable auditing and logging                0.0      1

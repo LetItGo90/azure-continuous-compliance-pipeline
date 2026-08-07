@@ -97,12 +97,3 @@ License
 
 MIT
 applescript
-
-
-For the Grype results, I'd skip dumping the raw output in the README. Instead, mention it exists and point to where someone can find it:
-
-> **Vulnerability Scanning:** Grype scan results are generated per-build and stored as workflow artifacts. Critical/High findings block the pipeline; see `.github/workflows/build.yml` for gate configuration.
-
-If you want, I can also convert that React architecture diagram to Mermaid so it renders natively in GitHub without needing an image file?
-
-9:14 AM
